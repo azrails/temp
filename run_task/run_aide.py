@@ -137,7 +137,7 @@ if __name__ == "__main__":
                 exp_name=exp_name,
                 code_model=args.code_model,
                 feedback_model=args.feedback_model,
-                report_mode=args.report_model
+                report_model=args.report_model
                 )
             futures.append(
                 executor.submit(
