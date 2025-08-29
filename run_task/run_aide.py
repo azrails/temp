@@ -51,7 +51,8 @@ def run_aide_container_with_timeout(
         command=command,
         volumes=volumes,
         environment={
-            "OPENAI_API_KEY": "pass",
+            "OPENAI_API_KEY": "ollama" if selected_network == "ollama" else os.environ.get("OPENAI_API_KEY"),
+            "GEMINI_API_KEY": os.environ.get("GEMINI_API_KEY"),
             "OPENAI_BASE_URL": base_url,
             "MPLCONFIGDIR": "/tmp"
         },
