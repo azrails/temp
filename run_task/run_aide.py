@@ -98,6 +98,9 @@ if __name__ == "__main__":
     parser.add_argument("--instructions-dir", type=str, default=BASE_PATH / "./instructions")
     parser.add_argument("--time-secs", type=int, default=(60 * 60 * 3))
     parser.add_argument("--num-workers", type=int, default=1)
+    parser.add_argument("--code-model", type=str, default="gpt-oss:120b")
+    parser.add_argument("--feedback-model", type=str, default="gpt-oss:120b")
+    parser.add_argument("--report-model", type=str, default="gpt-oss:120b")
     args = parser.parse_args()
 
     LOGS_DIR = Path(args.logs_dir).resolve()
@@ -117,9 +120,9 @@ if __name__ == "__main__":
 
     COMMAND_TEMPLATE = (
         "data_dir=/home/data/ desc_file=/home/instructions.txt "
-        "agent.code.model='gpt-oss:120b' "
-        "agent.feedback.model='gpt-oss:120b' "
-        "report.model='gpt-oss:120b' " 
+        "agent.code.model='{code_model}' "
+        "agent.feedback.model='{feedback_model}' "
+        "report.model='{report_model}' " 
         " exp_name={exp_name}"
     )
 
@@ -130,7 +133,12 @@ if __name__ == "__main__":
     with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as executor:
         futures = []
         for instr_file, exp_name in instruction_map.items():
-            command = COMMAND_TEMPLATE.format(exp_name=exp_name)
+            command = COMMAND_TEMPLATE.format(
+                exp_name=exp_name,
+                code_model=args.code_model,
+                feedback_model=args.feedback_model,
+                report_mode=args.report_model
+                )
             futures.append(
                 executor.submit(
                     run_aide_container_with_timeout,
