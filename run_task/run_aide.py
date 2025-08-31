@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     COMMAND_TEMPLATE = (
         "data_dir=/home/data/ desc_file=/home/instructions.txt "
-        "agent.steps=10 "
+        "agent.steps=500 "
         "agent.code.model='{code_model}' "
         "agent.feedback.model='{feedback_model}' "
         "report.model='{report_model}' "
