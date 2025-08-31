@@ -7,8 +7,7 @@ You may not manually annotate the data or hardcode outputs for specific language
 BENCHMARK INSTRUCTIONS
 ------
 - **First, please read the instructions below which are specific to our multilingual benchmark setup.**
-- **Dataset:** The dataset files for the competition are available in '/home/data'.
-- **Submission:** Regardless of the task language, and submission-specific instructions you MUST produce a submission at '/home/submission' directory
+- **Submission:** Regardless of the task language, and submission-specific instructions you MUST produce a submission at 'submission/' directory
 - **Test set:** As we do not have access to the original test labels for some competitions, we have constructed our own train/test split. The dataset provided may differ slightly from what is described in the competition instructions.
 - **Strict programming language requirement:** The programming language specified for the task is mandatory. You must implement your solution strictly in the given language. Solutions written in any other language will not be evaluated.
 - **Cheating:** Viewing or copying others multilingual solutions is not allowed. Plagiarized submissions will be disqualified.
@@ -29,13 +28,13 @@ COMPETITION-SPECIFIC INSTRUCTIONS
 SUBMISSION-SPECIFIC INSTRUCTIONS
 ------
 {% if competition_type_file and not competition_type_code %}
-Regardless of the task instructions, you MUST produce a 'submission.csv' file at '/home/submission/'.
+Regardless of the task instructions, you MUST produce a 'submission.csv' file at 'submission/'.
 We will only evaluate submission found at this path; failure to submit a `submission.csv` at this path will result in a failed attempt.
 {% elif competition_type_file and competition_type_code %}
-In addition to the required code implementation in a file 'submission{{ code_extention }}' at '/home/submission/', you MUST also produce a submission file named 'submission.csv' at '/home/submission/'.
+In addition to the required code implementation in a file 'submission{{ code_extention }}' at 'submission/', you MUST also produce a submission file named 'submission.csv' at 'submission/'.
 We will only evaluate submissions found at this path; both the code and the file are required for successful evaluation.
 {% elif competition_type_code and not competition_type_file %}
-Your submission consists of the implemented code only. Ensure that all required functions are present in 'submission{{ code_extention }}' with the correct signatures at '/home/submission/'.
+Your submission consists of the implemented code only. Ensure that all required functions are present in 'submission{{ code_extention }}' with the correct signatures at 'submission/'.
 We will only evaluate submission found at this path.
 {% endif %}
 

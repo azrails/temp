@@ -51,14 +51,14 @@ def run_aide_container_with_timeout(
         command=command,
         volumes=volumes,
         environment={
-            "OPENAI_API_KEY": "pass",
+            "OPENAI_API_KEY": "ollama" if selected_network == "ollama" else os.environ.get("OPENAI_API_KEY"),
+            "GEMINI_API_KEY": os.environ.get("GEMINI_API_KEY"),
             "OPENAI_BASE_URL": base_url,
-            "MPLCONFIGDIR": "/tmp"
+            "MPLCONFIGDIR": "/tmp",
         },
+        tty=True,
+        stdin_open=True,
         detach=True,
-        auto_remove=True,
-        stdin_open=False,
-        tty=False,
         network=selected_network
     )
 
@@ -72,22 +72,19 @@ def run_aide_container_with_timeout(
 
     timer = threading.Timer(timeout_sec, kill_container)
     timer.start()
-
     try:
-        # Посмотреть вывод контейнера в реальном времени
-        for line in container.logs(stream=True):
-            print(line.decode().strip())
-
         result = container.wait()
-        print(f"{instructions_file} finished with status:", result.get("StatusCode"))
-    except docker.errors.APIError:
-        print(f"{instructions_file} timeout reached, killing container...")
-        container.kill()
+        status = result.get("StatusCode", None)
+        # Добавьте логирование
+        logs = container.logs().decode('utf-8')
+        print(f"Контейнер завершился со статусом {status}. Логи:\n{logs}")
+        if status != 0:
+            print(f"{instructions_file} failed with status {status}")
     finally:
-        try:
-            container.remove(force=True)
-        except Exception:
-            pass
+        timer.cancel()
+        container.remove(force=True)
+
+ 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -120,9 +117,14 @@ if __name__ == "__main__":
 
     COMMAND_TEMPLATE = (
         "data_dir=/home/data/ desc_file=/home/instructions.txt "
+        "agent.steps=10 "
         "agent.code.model='{code_model}' "
         "agent.feedback.model='{feedback_model}' "
-        "report.model='{report_model}' " 
+        "report.model='{report_model}' "
+        "agent.search.max_debug_depth=20 "
+        "agent.search.debug_prob=1 "
+        "agent.expose_prediction=True "
+        "exec.timeout=3600 "
         " exp_name={exp_name}"
     )
 
@@ -137,7 +139,8 @@ if __name__ == "__main__":
                 exp_name=exp_name,
                 code_model=args.code_model,
                 feedback_model=args.feedback_model,
-                report_mode=args.report_model
+                time_limit = TIME_LIMIT_SECS,
+                report_model=args.report_model
                 )
             futures.append(
                 executor.submit(
@@ -149,7 +152,7 @@ if __name__ == "__main__":
                     data_dir=DATA_DIR,
                     submission_dir=SUBMISSION_DIR,
                     instructions_file=instr_file,
-                    timeout_sec=TIME_LIMIT_SECS
+                    timeout_sec=TIME_LIMIT_SECS,
                 )
             )
 

@@ -7,7 +7,7 @@ source env/bin/activate
 pip install -r requirements.txt 
 ``` 
 
-2) Грузим aide
+2) Грузим aide (форк mle-bench)
 ```bash
 git clone https://github.com/WecoAI/aideml.git
 ```
@@ -15,7 +15,7 @@ git clone https://github.com/WecoAI/aideml.git
 
 a) Если используему не self-hosted модели вроде gpt
 ```bash
-exprot OPENAI_API_KEY=...
+export OPENAI_API_KEY=...
 export GEMINI_API_KEY=...
 ```
 б) Для ollama
@@ -40,12 +40,54 @@ if "max_tokens" in filtered_kwargs:
 use_chat_api = os.getenv("OPENAI_BASE_URL") is not None
 ```
 ## Сборка
-Образ ранера
+### AIDE
+Идем в aideml и дописываем
+
+1) 
 ```bash
-docker build -t aide aideml
+# добавляем в requrements.txt
+xgboost
+catboost
+```
+2) 
+```bash
+#Dockerfile блок строк 30-33 заменям
+RUN apt-get update && apt-get install -y \
+    vim \
+    unzip \
+    zip \
+    p7zip-full \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    python-is-python3 \
+    build-essential \
+    openssh-server \
+    gettext \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    && pip install jupyter \
+    && rm -rf /var/lib/apt/lists/*
+```
+3)
+```python
+# aide/interpreter.py:138 добавляем после global_scope (огромная дыра при exec без scope, нужно пул реквест отправить)
+          global_scope: dict = {}
+        import types
+        main_mod = types.ModuleType("__main__")
+        main_mod.__file__ = self.agent_file_name
+        sys.modules["__main__"] = main_mod
+        global_scope = main_mod.__dict__
 ```
 
-Запуск ollama:
+4) Сборка образа
+```bash
+docker build --platform=linux/amd64 -t aide aideml
+```
+
+### ollama:
 ```bash
 docker compose -f ollama/docker-compose.yaml  up -d
 ...
@@ -79,31 +121,31 @@ train, test = train_test_split(dfc, shuffle=True, random_state=42)
 #instruction-path - путь куда положить собраный промпт
 #csv-sep по дефолту ",", некоторые данные имеют разделитель ";"
 
-python prepare/task_builder.py --id=14 --csv=competitions/Chineese_25.csv --task-suf="cn" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Chineese_25.csv --task-suf="cn" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/Arab_25.csv --task-suf="arab" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Arab_25.csv --task-suf="arab" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/English_25.csv --task-suf="en" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/English_25.csv --task-suf="en" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/Italian_25.csv --task-suf="it" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Italian_25.csv --task-suf="it" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/Japanese_25.csv --task-suf="jp" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Japanese_25.csv --task-suf="jp" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/Kazach_25.csv --task-suf="kz" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Kazach_25.csv --task-suf="kz" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/Polish_25.csv --task-suf="pl" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Polish_25.csv --task-suf="pl" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/Romanian_25.csv --task-suf="ro" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Romanian_25.csv --task-suf="ro" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/Spanish_25.csv --task-suf="es" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Spanish_25.csv --task-suf="es" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=14 --csv=competitions/Turkish_25.csv --task-suf="tr" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=4 --csv=competitions/Turkish_25.csv --task-suf="tr" --instruction-path=run_task/instructions
 ```
 
 ## Запуск
 Устанавливаем максимальное время на воркера и число воркеров
 ```bash
-python run_task/run_aide.py --time-secs=10800 --num-workers=3
+python run_task/run_aide.py --time-secs=10800 --num-workers=1
 ```
 
 ## Валидация
