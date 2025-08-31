@@ -121,31 +121,32 @@ train, test = train_test_split(dfc, shuffle=True, random_state=42)
 #instruction-path - путь куда положить собраный промпт
 #csv-sep по дефолту ",", некоторые данные имеют разделитель ";"
 
-python prepare/task_builder.py --id=4 --csv=competitions/Chineese_25.csv --task-suf="cn" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Chineese_25.csv --task-suf="cn" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/Arab_25.csv --task-suf="arab" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Arab_25.csv --task-suf="arab" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/English_25.csv --task-suf="en" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/English_25.csv --task-suf="en" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/Italian_25.csv --task-suf="it" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Italian_25.csv --task-suf="it" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/Japanese_25.csv --task-suf="jp" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Japanese_25.csv --task-suf="jp" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/Kazach_25.csv --task-suf="kz" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Kazach_25.csv --task-suf="kz" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/Polish_25.csv --task-suf="pl" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Polish_25.csv --task-suf="pl" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/Romanian_25.csv --task-suf="ro" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Romanian_25.csv --task-suf="ro" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/Spanish_25.csv --task-suf="es" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Spanish_25.csv --task-suf="es" --instruction-path=run_task/instructions
 
-python prepare/task_builder.py --id=4 --csv=competitions/Turkish_25.csv --task-suf="tr" --instruction-path=run_task/instructions
+python prepare/task_builder.py --id=10 --csv=competitions/Turkish_25.csv --task-suf="tr" --instruction-path=run_task/instructions
 ```
 
 ## Запуск
 Устанавливаем максимальное время на воркера и число воркеров
 ```bash
-python run_task/run_aide.py --time-secs=10800 --num-workers=1
+#доп параметр
+python run_task/run_aide.py --time-secs=10800 --num-workers=3 --code-model="gpt-oss:120b" --feedback-model="gpt-oss:120b" --report-model="gpt-oss:120b"
 ```
 
 ## Валидация
