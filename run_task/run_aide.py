@@ -59,6 +59,7 @@ def run_aide_container_with_timeout(
         tty=True,
         stdin_open=True,
         detach=True,
+        mem_limit="32g",
         network=selected_network
     )
 
